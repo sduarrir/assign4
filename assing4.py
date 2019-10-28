@@ -1,4 +1,5 @@
 #FUNCTIONS
+#for fastaq - convert into a fasta!!!
 #1.abundancefunction
 
 #3. hard trime (reuse trim from ass 2)
