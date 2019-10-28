@@ -1,10 +1,14 @@
 #FUNCTIONS
 #1.abundancefunction
 
+#3. hard trime (reuse trim from ass 2)
+#pyhton - resuse f(x)
+#bash - use fastxprocessor.py
+
 #2.split into 2files
 
-#3. hard trime (reuse trim from ass 2)
 
+#4,5,7 can use os!!
 #4. use BWA http://bio-bwa.sourceforge.net/
 
 
