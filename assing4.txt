@@ -1,0 +1,34 @@
+#FUNCTIONS
+**for fastaq - convert into a fasta!!!
+#1.abundancefunction
+- we do need to print an histogram? or a list with counts in a file
+
+#3. hard trime (reuse trim from ass 2)
+#pyhton - resuse f(x)
+#bash - use fastxprocessor.py
+
+#2.split into files
+
+#4,5,7 can use os!!
+#4. use BWA http://bio-bwa.sourceforge.net/
+ - must read description, installed and prepare a proper input to work with
+
+#5merge samfiles
+ - depends on how the ouput is provided. 
+ - think it could be useful to use a library 
+(then we wont have to deal with sam format, but we should ask santi
+https://biopython.org/DIST/docs/api/Bio.bgzf-module.html this can be nice to use, will take a proper look if hes ok)
+actually maybe its useful to use the module seqio for opening the files
+
+#6.sorts sam by cr (3rd column)
+for any extra information about sam files : https://samtools.github.io/hts-specs/SAMv1.pdf
+
+#7. comp num of reads alignmets
+
+
+PROGRAM OUTLINE
+arguments (we do need error messages if arguments are not valid)
+- file direction
+- where the program (bwa) is stored and maybe extra conditions for itself
+-(optional) where the user wants the output to be placed (by default should be current path)
+

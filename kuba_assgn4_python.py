@@ -28,16 +28,20 @@ class Program():
             file_extension = input_file_name.split('.')[1]
 
         # Transform Fastq input into lists of list containing heads and reads respectively
-        if input_file_list[0].startswith('@') and input_file_list[2] == '+':
+        if input_file_list[0].startswith('@') and input_file_list[2] == '+': #why not cheking here for ATGCN but under?
             head = [item.replace("@", ">") for item in input_file_list[::4]]
             read = [item for item in input_file_list[1::4]]
-            qual = [item for item in input_file_list[3::4]]
+            qual = [item for item in input_file_list[3::4]] #probably we can ignore it?
 
         # Transform Fasta input into lists of list containing heads and reads respectively
         elif input_file_list[0].startswith('>') and bool(re.match('^[ATCGN]+$', input_file_list[1].upper())):
             # Create list of lists with different repeated lines from FASTA file
             head = [item for item in input_file_list[::2]]
             read = [item for item in input_file_list[1::2]]
+
+        else: #we should have into account non fasta or fastaq (printing an error message)
+            raise ValueError("Program just works with fasta and fastq format")
+            #dont know if value error is the most accurate type of error
 
         # Save variables to use in the rest of the program
         self.head = head

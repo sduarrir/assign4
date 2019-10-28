@@ -1,0 +1,44 @@
+Produce two scripts (Bash/Python) that, given an input FASTA/FASTQ file,
+implement the following pipeline:
+
+1.Counts the abundance of each possible 3-mers (histogram)
+cat (already displayed in slides)
+
+2.Splits the input in FASTA/FASTQ into files of only 1 sequence each
+-all sequences will have the same lenght?
+#pseudocode
+toprint (variable to store all content of each file)
+counter (to edit files names)
+
+loop for reading all the file
+	if line starts with >
+		if toprint not empty: print in a file
+		toprint = line
+	else: (sequence)
+		(seq = line trimmed (with head?))
+		toprint += seq
+	
+3.Hard-trims (from the right) all sequences from all files 20nt
+a)use head - i would combine it with 2 
+b)call fastxprocessor before spliting
+
+4.Using the genome mapping tool BWA and the reference genome of the ScaromiceCerevisiae(any strain will do), aligns each of the files producing its corresponding SAM file.
+still have to know how it works
+
+5.Merge all SAM files ignoring headers (using Linux tools)
+counter for 7!!!
+cat *.txt > all.txt (that does not ignore headers, it should ignore the 3 first lines)
+
+6.Sorts the SAM file by chromosome and position
+sort by column
+
+7.Compute how many reads have been aligned (using Linux tools)
+thats just the number of the files, isnt it? 
+
+
+Arguments would be pretty similar to python (see the other note) maybe with the extra fastxprocessor, but i would try to implement it in another way since sentdin a lot of arguments can be a bit annoying)
+- impfile
+- bwa program
+
+- for converting fasta into fastaq do you prefer to use a python script? 
+if so this should be provided 
