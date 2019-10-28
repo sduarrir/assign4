@@ -13,4 +13,4 @@
 
 #6.sorts sam by cr
 
-#7. comp num of reads aligh
+#7. comp num of reads alignmets
