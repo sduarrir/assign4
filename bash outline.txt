@@ -17,6 +17,8 @@ loop for reading all the file
 	else: (sequence)
 		(seq = line trimmed (with head?))
 		toprint += seq
+read line by line :
+head -i filename | tail -1 #i corresponds to string index
 	
 3.Hard-trims (from the right) all sequences from all files 20nt
 a)use head - i would combine it with 2 
@@ -28,6 +30,7 @@ still have to know how it works
 5.Merge all SAM files ignoring headers (using Linux tools)
 counter for 7!!!
 cat *.txt > all.txt (that does not ignore headers, it should ignore the 3 first lines)
+ tail -1 returns the last line (the one we are interested in!)
 
 6.Sorts the SAM file by chromosome and position
 sort by column
