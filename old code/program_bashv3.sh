@@ -1,7 +1,7 @@
 #!/bin/bash
 ##ASSIGNMENT 4
 
-
+#a
 if [ $# -ne 2 ]; then
  echo "The program needs to arguments, genome file and reads file (in this order)";
  exit;
