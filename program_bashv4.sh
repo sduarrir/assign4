@@ -74,6 +74,7 @@ for file in assign4_temp/*.sam; do
   fi
   #rm $file; # remove the file
 done;
+#SAM HAS A TOOL THAT FILERS NON ALIGNED SEQUENCES (so we could do this after the merge!##
 
 
 #6. Sorts the SAM file by chromosome and position
