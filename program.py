@@ -89,11 +89,11 @@ for key in sorted(kdict):
 
 
 ##4.Using the genome mapping tool BWA and the reference genome of the ScaromiceCerevisiae(any strain will do), aligns each of the files producing its corresponding SAM file.
-command = 'bwa index -p sacch -a mem ' + genome + ' 2> /dev/null'
+command = 'bwa index -p sacch -a bwtsw ' + genome + ' 2> /dev/null'
 os.system(command)
 for file in os.listdir(path):
     file2 = path + file + '.sam'
-    command = 'bwa mem sacch -a mem ' + file + ' > '+ file2 + ' 2> /dev/null'
+    command = 'bwa mem -a sacch  ' + file + ' > '+ file2 + ' 2> /dev/null'
     os.system(command)
     file = path +file
     os.remove(file)

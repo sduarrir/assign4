@@ -62,8 +62,8 @@ done
 ## aligns each of the files producing its corresponding SAM file.
 printf "\nIndexing the reference sequence and creating alignment files...\n";
 # index sacch genome
-#bwa index -p sacch -a bwtsw $GENOME 2> /dev/null; #should be mem!
-bwa index -p sacch -a mem $GENOME 2> /dev/null; #should be mem?
+bwa index -p sacch -a bwtsw $GENOME 2> /dev/null; #should be mem!
+#bwa index -p sacch -a mem $GENOME 2> /dev/null; #should be mem?
 # for each fasta create sam allignment file
 for file in assign4_temp/*.fasta; do bwa mem sacch $file > $file.sam 2> /dev/null; rm $file ;done 
 printf "\nRemoving SAM headers and creating a merged SAM file (merged-file.sam)...\n";
