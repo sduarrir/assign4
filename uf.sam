@@ -1,4 +1,3 @@
-@HD	VN:1.0	SO:unsorted
 @SQ	SN:YAL001C	LN:3483
 @SQ	SN:YAL002W	LN:3825
 @SQ	SN:YAL003W	LN:621
@@ -6712,5 +6711,5 @@
 @SQ	SN:R0020C	LN:1122
 @SQ	SN:R0030W	LN:546
 @SQ	SN:R0040C	LN:891
-@PG	ID:bwa	PN:bwa	VN:0.7.17-r1188	CL:bwa mem -a sacch temp/read39.fasta
-H.Sapiens.1M.Illumina.l100.low.000000039	4	*	0	0	*	*	0	0	TCTAGGTTACTTATAATACCTAATGCAATGTAAATAATATGTAAATAGTTGGTATCCTATATTGTTTAGAACAAAATGAC	*	AS:i:0	XS:i:0
+@PG	ID:bwa	PN:bwa	VN:0.7.17-r1188	CL:bwa mem -a sacch temp/read0.fasta
+@PG	ID:samtools	PN:samtools	PP:bwa	VN:1.9-210-g72d140b	CL:/home/masterbio/Descargas/samtools/samtools view -HS temp/read0.fasta.sam

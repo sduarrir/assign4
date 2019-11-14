@@ -94,13 +94,17 @@ os.system(command)
 for file in os.listdir(path):
     file = path + file
     file2 = file + '.sam'
-    command = 'bwa mem -a sacch  ' + file + ' 1> ' + file2 + ' 2> /dev/null'
+    f=open(file2, 'wt')
+    f.write('@HD\tVN:1.0\tSO:unsorted\n')
+    f.close()
+    command = 'bwa mem -a sacch  ' + file + ' 1>> ' + file2 + ' 2> /dev/null'
     os.system(command)
     os.remove(file)
 
 ##5.Merge all SAM files ignoring headers (using Linux tools)
 command = 'samtools merge -O sam -f merge.sam ' + path + '*.sam > merge.sam'
 os.system(command)
+#TILL HERE IT WORKS (MERGED SAM FILE)
 
 
 ##6.Sorts the SAM file by chromosome and position
