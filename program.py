@@ -91,7 +91,7 @@ for key in sorted(kdict):
 command = 'bwa index -p sacch -a mem ' + genome + ' 2> /dev/null'
 os.system(command)
 for file in os.listdir(path):
-    file2 = file + '.sam'
+    file2 = path + file + '.sam'
     command = 'bwa mem sacch -a mem ' + file + ' > '+ file2 + ' 2> /dev/null'
     os.system(command)
     file = path +file
