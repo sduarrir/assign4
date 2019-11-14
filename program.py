@@ -80,7 +80,11 @@ while True:
 readsfile.close()
 
 statfile = open(sys.argv[1] + ".stats","wt")
-statfile.write(kdict)
+
+for key in sorted(kdict):
+    statfile.write("%s : %d" % (key, kdict))
+    print("%s : %d" % (key, kdict))
+#statfile.write(kdict)
 
 
 ##4.Using the genome mapping tool BWA and the reference genome of the ScaromiceCerevisiae(any strain will do), aligns each of the files producing its corresponding SAM file.
