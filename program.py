@@ -77,6 +77,7 @@ while True:
         qual = qual[:-cut]
         outf.write("%s%s\n" % (plus, qual))
     outf.close()
+    i += 1
 readsfile.close()
 
 statfile = open(sys.argv[1] + ".stats","wt")
