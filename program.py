@@ -92,10 +92,10 @@ for key in sorted(kdict):
 command = 'bwa index -p sacch -a bwtsw ' + genome + ' 2> /dev/null'
 os.system(command)
 for file in os.listdir(path):
-    file2 = path + file + '.sam'
-    command = 'bwa mem -a sacch  ' + file + ' > '+ file2 + ' 2> /dev/null'
+    file = path + file
+    file2 = file + '.sam'
+    command = 'bwa mem -a sacch  ' + file + ' 1> ' + file2 + ' 2> /dev/null'
     os.system(command)
-    file = path +file
     os.remove(file)
 
 ##5.Merge all SAM files ignoring headers (using Linux tools)
