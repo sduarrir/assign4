@@ -11,7 +11,7 @@ from Bio import SeqIO #would allow us to process sequences
 # Function to open input file and check if correct format
 def open_input(filename): #we provide the file
     try:
-
+        inputfile = open(filename, "rt")
     except FileNotFoundError:
         print(filename, "not found. check for any typos!")
         exit(1)
@@ -26,30 +26,96 @@ def open_input(filename): #we provide the file
     inputfile.seek(0)
     return (inputfile, fileformat) #returns the file and its format (fasta o fastaq)
 
+#trims and also counts trinucleotides
+def proc_seq(seq, kdict, rtrim):
+    for i in range(len(seq) - 2):
+        kmer = sequence[i:i + 3]
+        if kmer not in kdict:
+            kdict[kmer] = 1
+        else:
+            kdict[kmer] += 1
+    return seq[:-rtrim], dict
+
+
 
 #open the files (and check if format is correct
 if len(sys.argv) !=3:
     print("The program need the following arguments:\n\t--input [INPUTFILE]\n\t--ouput [FILE]  If file exists, will be overwrited!!!\n\t--operation [OPERATION] (what do you want the program to print\nSome operations will need conditions.\n\trc (reverse complement) does not need conditions\n\ttrim needs: --trim-right [POSITION] and --trim-left [POSITION]\n\tadaptor-removal needs: --adaptor [SEQUENCE]")
     exit(1)
 genome = sys.argv[1]
+genomefile, _ = open_input(genome)
+genomefile.close()
 reads = sys.argv[2]
+readsfile, format = open_input(reads)
+
+kdict = {}
+cut = 20
+i = 0
 
 ##1.Counts the abundance of each possible 3-mers (histogram)
-
-
-
 ##2.Splits the input in FASTA/FASTQ into files of only 1 sequence each
 ##3.Hard-trims (from the right) all sequences from all files 20nt
+path = "temp/"
+os.mkdir(path)
+while True:
+    tag = readsfile.readline()
+    if not tag: break
+    #read seq
+    outf = open(path + read+ i + '.' + format, 'wt')
+    seq = readsfile.readline.strip()
+    seq, kdict = proc_seq(seq, kdict, cut)
+    outf.write("%s%s\n" % (tag, seq))
+    if format == 'fastq':
+        plus = readsfile.readline()
+        qual = readsfile.readline.strip()
+        qual = qual[:-cut]
+        outf.write("%s%s\n" % (plus, qual))
+    outf.close()
+readsfile.close()
+
+statfile= open(sys.argv[1] + ".stats","wt")
+statfile.write(kdict)
+
+
 ##4.Using the genome mapping tool BWA and the reference genome of the ScaromiceCerevisiae(any strain will do), aligns each of the files producing its corresponding SAM file.
+command = 'bwa index -p sacch -a mem ' + genome + ' 2> /dev/null'
+os.system(command)
+for file in os.listdir(path):
+    file2 = file + '.sam'
+    command = 'bwa mem sacch -a mem ' + file + ' > '+ file2 + ' 2> /dev/null'
+    os.system(command)
+    file = path +file
+    os.remove(file)
 
 ##5.Merge all SAM files ignoring headers (using Linux tools)
-os.system("samtools merge merge.sam *")
+command = 'samtools merge -O sam -f merge.sam ' + path + '*.sam > merge.sam'
+os.system(command)
+
 
 ##6.Sorts the SAM file by chromosome and position
-os.system("samtools sort merge.sam sorted_merged.sam")
-os.system("samtools index sorted_merged.sam ind_sorted_merged.sam")
+merged = open('merge.sam', 'rt')
+ffilter = 'filt_merge.sam'
+fmerged = open(ffilter, 'wt')
+count = 0
+while True:
+    read = merged.readline()
+    if not read : break
+    if read[0] == '@':
+        fmerged.write(read)
+    else:
+        readlist = read.split()
+        if readlist[1] != '*' and readlist[2] != '*':
+            count += 1
+            read = '\t'.join(readlist)
+            fmerged.write(read)
+
+fmerged.close()
+merged.close()
+
+command = 'samtools sort -O SAM -o '+ filter+ ' ' + filter
+os.system(comand)
 
 ##7.Compute how many reads have been aligned (using Linux tools)
 
-os.system("samtools stats aln.sorted.sam")
+print('%s reads aligned' % count)
 
