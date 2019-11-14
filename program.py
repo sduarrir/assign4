@@ -82,8 +82,8 @@ readsfile.close()
 statfile = open(sys.argv[1] + ".stats","wt")
 
 for key in sorted(kdict):
-    statfile.write("%s : %d" % (key, kdict))
-    print("%s : %d" % (key, kdict))
+    statfile.write("%s : %d" % (key, kdict[key]))
+    print("%s : %d" % (key, kdict[key]))
 #statfile.write(kdict)
 
 
