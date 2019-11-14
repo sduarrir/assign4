@@ -4,7 +4,7 @@ Produce two scripts (Bash/Python) that, given an input FASTA/FASTQ file, impleme
 """
 import sys
 import os
-from Bio import SeqIO #would allow us to process sequences
+#from Bio import SeqIO #would allow us to process sequences
 ##FUNCTIONS
 
 
@@ -29,12 +29,12 @@ def open_input(filename): #we provide the file
 #trims and also counts trinucleotides
 def proc_seq(seq, kdict, rtrim):
     for i in range(len(seq) - 2):
-        kmer = sequence[i:i + 3]
+        kmer = seq[i:i + 3]
         if kmer not in kdict:
             kdict[kmer] = 1
         else:
             kdict[kmer] += 1
-    return seq[:-rtrim], dict
+    return seq[:-rtrim], kdict
 
 
 
@@ -56,24 +56,30 @@ i = 0
 ##2.Splits the input in FASTA/FASTQ into files of only 1 sequence each
 ##3.Hard-trims (from the right) all sequences from all files 20nt
 path = "temp/"
-os.mkdir(path)
+try:
+    os.mkdir(path)
+except:
+    print ('directory already exists')
+
+
 while True:
     tag = readsfile.readline()
     if not tag: break
     #read seq
-    outf = open(path + read+ i + '.' + format, 'wt')
-    seq = readsfile.readline.strip()
-    seq, kdict = proc_seq(seq, kdict, cut)
+    filename = path + 'read' + str(i) + '.' + format
+    outf = open(filename, 'wt')
+    seq = readsfile.readline().strip()
+    seq, kdict = proc_seq(seq.upper(), kdict, cut) #change  sequence top uppercase
     outf.write("%s%s\n" % (tag, seq))
     if format == 'fastq':
         plus = readsfile.readline()
-        qual = readsfile.readline.strip()
+        qual = readsfile.readline().strip()
         qual = qual[:-cut]
         outf.write("%s%s\n" % (plus, qual))
     outf.close()
 readsfile.close()
 
-statfile= open(sys.argv[1] + ".stats","wt")
+statfile = open(sys.argv[1] + ".stats","wt")
 statfile.write(kdict)
 
 
@@ -113,7 +119,7 @@ fmerged.close()
 merged.close()
 
 command = 'samtools sort -O SAM -o '+ filter+ ' ' + filter
-os.system(comand)
+os.system(command)
 
 ##7.Compute how many reads have been aligned (using Linux tools)
 
