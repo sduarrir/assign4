@@ -95,15 +95,19 @@ for file in os.listdir(path):
     file = path + file
     file2 = file + '.sam'
     f=open(file2, 'wt')
-    f.write('@HD\tVN:1.0\tSO:unsorted\n')
+    #f.write('@HD\tVN:1.0\tSO:unsorted\n')
     f.close()
     command = 'bwa mem -a sacch  ' + file + ' 1>> ' + file2 + ' 2> /dev/null'
     os.system(command)
     os.remove(file)
 
 ##5.Merge all SAM files ignoring headers (using Linux tools)
+import subprocess
 command = 'samtools merge -O sam -f merge.sam ' + path + '*.sam > merge.sam'
-os.system(command)
+sp = subprocess.Popen(["/bin/bash", "-i", "-c", command])
+sp.communicate()
+
+#os.system(command)
 #TILL HERE IT WORKS (MERGED SAM FILE)
 
 
@@ -127,7 +131,7 @@ while True:
 fmerged.close()
 merged.close()
 
-command = 'samtools sort -O SAM -o '+ filter+ ' ' + filter
+command = 'samtools sort -O SAM -o '+ ffilter+ ' ' + ffilter
 os.system(command)
 
 ##7.Compute how many reads have been aligned (using Linux tools)
