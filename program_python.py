@@ -36,6 +36,8 @@ def proc_seq(seq, kdict, rtrim):
             kdict[kmer] = 1
         else:
             kdict[kmer] += 1
+        if len(seq)<=rtrim:
+            return False, kdict
     return seq[:-rtrim], kdict
 
 def rm_files(files): #given a file / path removes what is indicated
@@ -78,13 +80,17 @@ while True:
     outf = open(filename, 'wt')
     seq = readsfile.readline().strip()
     seq, kdict = proc_seq(seq.upper(), kdict, cut) #change  sequence top uppercase
-    outf.write("%s%s\n" % (tag, seq))
+    if seq:
+        outf.write("%s%s\n" % (tag, seq))
     if format == 'fastq':
         plus = readsfile.readline()
         qual = readsfile.readline().strip()
-        qual = qual[:-cut]
-        outf.write("%s%s\n" % (plus, qual))
+        if seq:
+            qual = qual[:-cut]
+            outf.write("%s%s\n" % (plus, qual))
     outf.close()
+    if not seq:
+        rm_files(filename)
     i += 1
 readsfile.close()
 
