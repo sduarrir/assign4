@@ -69,7 +69,7 @@ except:
     print ('Directory already exists. Removing files')
     rm_files(clean)
 
-
+print("\nReading input sequence, counting number of 3-mers ('mer-counts.txt')...\nCreating seperate fastx files...\n")
 while True:
     tag = readsfile.readline()
     if not tag: break
@@ -92,7 +92,6 @@ statfile = open(sys.argv[1] + ".stats","wt")
 
 for key in sorted(kdict):
     statfile.write("%s : %d" % (key, kdict[key]))
-    print("%s : %d" % (key, kdict[key]))
 #statfile.write(kdict)
 
 
@@ -100,6 +99,7 @@ for key in sorted(kdict):
 gencode = 'SACCHGEN'
 command = 'bwa index -p ' + gencode + ' -a bwtsw ' + genome + ' 2> /dev/null'
 os.system(command)
+print("\nIndexing the reference sequence and creating alignment files...\n")
 for file in os.listdir(path):
     file = path + file
     file2 = file + '.sam'
@@ -120,11 +120,12 @@ os.system(command)
 #rm_files(file)
 
 ##6.Sorts the SAM file by chromosome and position
+print("\nTransforming SAM file...\n")
 fmerged = open(merged, 'rt')
 filt = 'filt_merge.sam'
 ffilt = open(filt, 'wt')
 count = 0
-while True:
+while True: #keep the c
     read = fmerged.readline()
     if not read : break
     if read[0] == '@':

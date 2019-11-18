@@ -75,14 +75,14 @@ fi
 
 # Read stats file, only keep the nucleotides (some files had 3-mers like AMW or WGA for some reason) common for fasta and fastq
 cat trimers.1.txt trimers.2.txt trimers.3.txt | sort | uniq -c > stats.txt;
-    rm trimers.1.txt;
-    rm trimers.2.txt;
-    rm trimers.3.txt;
-    cat stats.txt| sort | awk -F ' ' 'length($2)== 3{print$1,$2}' > stats_filt.txt;
-    rm stats.txt;
-
+rm trimers.1.txt;
+rm trimers.2.txt;
+rm trimers.3.txt;
+cat stats.txt| sort | awk -F ' ' 'length($2)== 3{print$1,$2}' > stats_filt.txt;
+rm stats.txt;
 echo > mer-counts.txt;
 cat stats_filt.txt | while read line 
+
 do
   line=$(echo $line | tr '[:lower:]' '[:upper:]' )
   IFS=$' '; # space is set as delimiter
@@ -95,6 +95,15 @@ do
 done
 
 rm stats_filt.txt;
+
+##4. Using the genome mapping tool BWA and the reference genome of the Scaromice Cerevisiae (any strain will do)
+## aligns each of the files producing its corresponding SAM file.
+printf "\nIndexing the reference sequence and creating alignment files...\n";
+# index genome
+bwa index -p GENIDX -a bwtsw $GENOME 2> /dev/null; 
+# for each fastq create sam allignment file
+for file in assign4_temp/*.fast*; do bwa mem GENIDX $file > $file.sam 2> /dev/null; rm $file ;done 
+
 
 
 # Keep only sam files that produced alignment
@@ -115,13 +124,6 @@ for file in assign4_temp/*.sam; do
   fi
 done
 
-##4. Using the genome mapping tool BWA and the reference genome of the Scaromice Cerevisiae (any strain will do)
-## aligns each of the files producing its corresponding SAM file.
-printf "\nIndexing the reference sequence and creating alignment files...\n";
-# index genome
-bwa index -p GENIDX -a bwtsw $GENOME 2> /dev/null; 
-# for each fastq create sam allignment file
-for file in assign4_temp/*.fast*; do bwa mem GENIDX $file > $file.sam 2> /dev/null; rm $file ;done 
 
 
 #5. Merge all SAM files ignoring headers (using Linux tools)
