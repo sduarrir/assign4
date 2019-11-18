@@ -94,7 +94,7 @@ while True:
     i += 1
 readsfile.close()
 
-statfile = open(sys.argv[1] + ".stats","wt")
+statfile = open(sys.argv[1] + "3mers.stats","wt")
 
 for key in sorted(kdict):
     statfile.write("%s : %d" % (key, kdict[key]))
