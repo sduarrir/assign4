@@ -34,10 +34,15 @@ cat  $FILE | awk '/>/{x="assign4_temp/fasta_seq"++i".fasta";}{print > x;}';
 for file in assign4_temp/*.fasta; do
     head=$(cat $file | head -n 1); # Leave head as is
     rest=$(cat $file | tail -n +2 $file | tr '[:lower:]' '[:upper:]'); # The rest transform to uppercase
-    rest_no_whitespace="$(echo -e "${rest}" | tr -d '[:space:]')";
-    rest_cut=${rest_no_whitespace::-20}; # Trim last 20 bases
-    logwrite="$head\n$rest_cut";
-    echo -e $logwrite > $file;
+    lRest=${#rest}
+    if [ $lRest -gt 20 ]; then
+        rest_no_whitespace="$(echo -e "${rest}" | tr -d '[:space:]')";
+        rest_cut=${rest_no_whitespace::-20}; # Trim last 20 bases
+        logwrite="$head\n$rest_cut";
+        echo -e $logwrite > $file;
+    else
+    rm $file;
+    fi
 done
 fi
 
@@ -61,16 +66,20 @@ if [ $FIRSTCHAR = "@" ]; then
     for file in assign4_temp/*.fastq; do
         head=$(cat $file | sed -n 1p); # Leave head as is
         seq=$(cat $file | sed -n 2p $file | tr '[:lower:]' '[:upper:]'); # The rest transform to uppercase
-        qual=$(cat $file | sed -n 4p $file); # The rest transform to uppercase
-        seq_cut=$(echo $seq | head -c -20); # Trim last 20 bases
-        qual_cut=$(echo $qual | head -c -20); # Trim last 20 bases
-        echo $head > $file ;
-        echo $seq_cut >> $file ;
-        echo '+' >> $file ;
-        echo $qual_cut >> $file ;
+        lSeq=${#seq}
+        if [ $lSeq -gt 20 ]; then
+            qual=$(cat $file | sed -n 4p $file); # The rest transform to uppercase
+            seq_cut=$(echo $seq | head -c -20); # Trim last 20 bases
+            qual_cut=$(echo $qual | head -c -20); # Trim last 20 bases
+            echo $head > $file ;
+            echo $seq_cut >> $file ;
+            echo '+' >> $file ;
+            echo $qual_cut >> $file ;
+        else
+        rm $file;
+        fi
     done
 fi
-
 
 
 # Read stats file, only keep the nucleotides (some files had 3-mers like AMW or WGA for some reason) common for fasta and fastq
@@ -125,36 +134,40 @@ for file in assign4_temp/*.sam; do
 done
 
 
-
 #5. Merge all SAM files ignoring headers (using Linux tools)
 #6. Sorts the SAM file by chromosome and position
 # Sort and merge sam files
 printf "\nSorting and merging SAM files...\n"
-for file in assign4_temp/*.sam; do
-  samtools sort -O SAM -o $file $file;
-done;
-samtools merge -O sam -f merge.sam assign4_temp/*.sam > merge.sam;
-for file in assign4_temp/*.sam; do rm $file; done; # remove sam files from assign4_temp dir
-cat merge.sam | grep -v "^@" > sorted-merged.sam; # remove header lines
+count=`ls /assign4_temp *.sam 2>/dev/null | wc -l`
+    if [ $count != 0 ]; then
+    for file in assign4_temp/*.sam; do
+    samtools sort -O SAM -o $file $file;
+    done;
+    samtools merge -O sam -f merge.sam assign4_temp/*.sam > merge.sam;
+    for file in assign4_temp/*.sam; do rm $file; done; # remove sam files from assign4_temp dir
+    cat merge.sam | grep -v "^@" > sorted-merged.sam; # remove header lines
 
 
-printf "\nRemoving files produced by the program...\n\n";
-# rm temp directory
-if [ ! "$(ls -A "assign4_temp")" ];
-  then
-    rmdir assign4_temp;
-fi
-rm GENIDX.*;
+    printf "\nRemoving files produced by the program...\n\n";
+    # rm temp directory
+    if [ ! "$(ls -A "assign4_temp")" ];
+    then
+        rmdir assign4_temp;
+    fi
+    rm GENIDX.*;
 
-printf "\nDone\n";
+    printf "\nDone\n";
 
-#7. Compute how many reads have been aligned (using Linux tools)
-# Count number of mapped reads
-printf "\nNumber of reads mapped:\n";
-samtools view merge.sam | wc -l;
-rm merge.sam;
+    #7. Compute how many reads have been aligned (using Linux tools)
+    # Count number of mapped reads
+    printf "\nNumber of reads mapped:\n";
+    samtools view merge.sam | wc -l;
+    rm merge.sam;
+    printf "\nThe sorted merged SAM file can be found in the direcory under the name:\nsorted-merged.sam:\n";
+    else
+    printf "\nNo alligned reads found. \n";
+    fi
 
-printf "\nThe sorted merged SAM file can be found in the direcory under the name:\nsorted-merged.sam:\n";
 
 
 
