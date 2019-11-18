@@ -67,7 +67,7 @@ if [ $FIRSTCHAR = "@" ]; then
         head=$(cat $file | sed -n 1p); # Leave head as is
         seq=$(cat $file | sed -n 2p $file | tr '[:lower:]' '[:upper:]'); # The rest transform to uppercase
         lSeq=${#seq}
-        if [ lSeq -gt 20 ]; then
+        if [ $lSeq -gt 20 ]; then
             qual=$(cat $file | sed -n 4p $file); # The rest transform to uppercase
             seq_cut=$(echo $seq | head -c -20); # Trim last 20 bases
             qual_cut=$(echo $qual | head -c -20); # Trim last 20 bases
