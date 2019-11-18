@@ -18,8 +18,10 @@ def open_input(filename): #we provide the file
     line = inputfile.readline()
     if line[0] == "@":
         fileformat = "fastq"
+        print("%s format is fastq" % filename)
     elif line[0] == ">":
         fileformat = "fasta"
+        print("%s format is fasta" % filename)
     else:
         print(filename, "format is not fastaq or fasta.") #if format is not fasta or fastaq it will print an error and exit
         exit(1)
@@ -36,6 +38,10 @@ def proc_seq(seq, kdict, rtrim):
             kdict[kmer] += 1
     return seq[:-rtrim], kdict
 
+def rm_files(files): #given a file / path removes what is indicated
+    clean = 'rm ' + files
+    os.system(clean)
+
 
 
 #open the files (and check if format is correct
@@ -50,16 +56,18 @@ readsfile, format = open_input(reads)
 
 kdict = {}
 cut = 20
-i = 0
+i = 0 #count for the files
 
 ##1.Counts the abundance of each possible 3-mers (histogram)
 ##2.Splits the input in FASTA/FASTQ into files of only 1 sequence each
 ##3.Hard-trims (from the right) all sequences from all files 20nt
-path = "temp/"
+path = "assignment4_temp/"
+clean = path + '*' #to clean path
 try:
     os.mkdir(path)
 except:
-    print ('directory already exists')
+    print ('Directory already exists. Removing files')
+    rm_files(clean)
 
 
 while True:
@@ -89,50 +97,64 @@ for key in sorted(kdict):
 
 
 ##4.Using the genome mapping tool BWA and the reference genome of the ScaromiceCerevisiae(any strain will do), aligns each of the files producing its corresponding SAM file.
-command = 'bwa index -p sacch -a bwtsw ' + genome + ' 2> /dev/null'
+gencode = 'SACCHGEN'
+command = 'bwa index -p ' + gencode + ' -a bwtsw ' + genome + ' 2> /dev/null'
 os.system(command)
 for file in os.listdir(path):
     file = path + file
     file2 = file + '.sam'
     f=open(file2, 'wt')
-    #f.write('@HD\tVN:1.0\tSO:unsorted\n')
+    f.write('@HD\tVN:1.0\tSO:unsorted\n')
     f.close()
-    command = 'bwa mem -a sacch  ' + file + ' 1>> ' + file2 + ' 2> /dev/null'
+    command = 'bwa mem -a ' + gencode + ' ' + file + ' 1>> ' + file2 + ' 2> /dev/null'
     os.system(command)
     os.remove(file)
 
 ##5.Merge all SAM files ignoring headers (using Linux tools)
-import subprocess
-command = 'samtools merge -O sam -f merge.sam ' + path + '*.sam > merge.sam'
-sp = subprocess.Popen(["/bin/bash", "-i", "-c", command])
-sp.communicate()
-
+merged = 'merged.sam'
+command = 'samtools merge -O sam -f ' + merged + ' ' + path + '*.sam'
+os.system(command)
+#rm_files(clean)
 #os.system(command)
 #TILL HERE IT WORKS (MERGED SAM FILE)
-
+#rm_files(file)
 
 ##6.Sorts the SAM file by chromosome and position
-merged = open('merge.sam', 'rt')
-ffilter = 'filt_merge.sam'
-fmerged = open(ffilter, 'wt')
+fmerged = open(merged, 'rt')
+filt = 'filt_merge.sam'
+ffilt = open(filt, 'wt')
 count = 0
 while True:
-    read = merged.readline()
+    read = fmerged.readline()
     if not read : break
     if read[0] == '@':
-        fmerged.write(read)
+        #if read[:3] != '@HD':
+            #continue
+        ffilt.write(read)
     else:
         readlist = read.split()
         if readlist[1] != '*' and readlist[2] != '*':
             count += 1
-            read = '\t'.join(readlist)
-            fmerged.write(read)
+            read = '\t'.join(readlist) + '\n'
+            ffilt.write(read)
 
 fmerged.close()
-merged.close()
+rm_files(merged)
+ffilt.close()
 
-command = 'samtools sort -O SAM -o '+ ffilter+ ' ' + ffilter
+command = 'samtools sort -O SAM -o '+ filt+ ' ' + filt
 os.system(command)
+f = open('final.sam', 'wt')
+ffilt=open(filt, 'rt')
+#clean output file
+while True:
+    read = ffilt.readline()
+    if not read : break
+    if read[0] != '@':
+        f.write(read)
+ffilt.close()
+rm_files(filt)
+f.close()
 
 ##7.Compute how many reads have been aligned (using Linux tools)
 
